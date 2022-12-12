@@ -1,0 +1,26 @@
+[
+  {
+    "id": 0,
+    "value": "html"
+  },
+  {
+    "id": 1,
+    "value": "css"
+  },
+  {
+    "id": 2,
+    "value": "js"
+  },
+  {
+    "id": 3,
+    "value": "ts"
+  },
+  {
+    "id": 4,
+    "value": "react"
+  },
+  {
+    "id": 5,
+    "value": "node"
+  }
+]

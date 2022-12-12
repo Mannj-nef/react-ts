@@ -1,3 +1,5 @@
+import { String, T, Union } from "ts-toolbelt";
+
 // INTERFACES
 {
   interface IUser {
@@ -250,7 +252,7 @@
     return result;
   }
 
-  console.log(getDevicesKeys(devices, "namef"));
+  // console.log(getDevicesKeys(devices, "namef"));
 }
 
 // UTILITY TYPE
@@ -311,7 +313,7 @@
   }
 
   // Pick<Type, Key>
-  // Chỉ cho phép các properti là các key đã truyền vào bên trong Pick
+  // Tạo ra type mới từ 1 type trước đó với 1 số key cần thiết.
   {
     interface Todo {
       title: string;
@@ -359,5 +361,82 @@
   {
     type T0 = NonNullable<string | number | undefined>;
     type T1 = NonNullable<0 | "1" | undefined>;
+  }
+
+  // MAPPED TYPES
+  {
+    type LockedAccount = {
+      readonly id: string;
+      readonly name: string;
+    };
+    type CreateMutable<T> = {
+      -readonly [K in keyof T]: T[K];
+    };
+
+    type UnlockedAccount = CreateMutable<LockedAccount>;
+
+    const account: UnlockedAccount = {
+      id: "23123",
+      name: "quan",
+    };
+    account.id = "1231";
+  }
+
+  // CONDITIONAL TYPES
+  {
+    type SomeOne = {
+      id: string;
+    };
+    type TowOne = {
+      id: string;
+      age: number;
+    };
+
+    type ThreeOne<T> = T extends SomeOne ? string : number;
+
+    type foreOne = ThreeOne<TowOne>;
+  }
+
+  // getDeepValue
+  {
+    const obj = {
+      foo: {
+        a: true,
+        b: 20,
+      },
+      baz: {
+        c: false,
+        d: 30,
+      },
+    };
+
+    function getLogObj<T, U extends keyof T, I extends keyof T[U]>(
+      obj: T,
+      keyObj: U,
+      keyItem: I
+    ): T[U][I] {
+      return obj[keyObj][keyItem];
+    }
+
+    console.log(getLogObj(obj, "baz", "d"));
+  }
+
+  // deepEqualCompare
+
+  {
+    const query = "/home?name=manhquandev&age=28";
+    type TypeQuery = typeof query;
+    type firstSplit = String.Split<TypeQuery, "?">[1];
+    type QueryParam = String.Split<firstSplit, "&">;
+
+    type FinalQuery = {
+      [Q in QueryParam[number]]: {
+        [K in String.Split<Q, "=">[0]]: String.Split<Q, "=">[1];
+      };
+    }[QueryParam[number]];
+    type result = Union.Merge<FinalQuery>;
+  }
+
+  {
   }
 }

@@ -1,95 +1,95 @@
-import { useEffect, useState } from "react";
-import { Premission } from "./utils/enums";
-import { parseCoordinate } from "./utils/function";
-import { TravelItem, User } from "./utils/interfaces";
-import { ICoordinate } from "./utils/function";
-import "./utils/app";
+import { ReactNode, useEffect, useState } from "react";
+import useTodo from "./hooks/useTodos";
+import { InitialState } from "./utils/interfaces";
+// import "./utils/app";
 
-const reviews = [
+const initialState: InitialState[] = [
   {
-    name: "Evondev",
-    image: "",
-    stars: 5,
-    premiumUser: true,
-    date: "05/09/2022",
-  },
-  {
-    name: "CharkaUI",
-    image: "",
-    stars: 4,
-    premiumUser: false,
-    date: "03/08/2022",
-  },
-  {
-    name: "React Query",
-    image: "",
-    stars: 3,
-    premiumUser: false,
-    date: "04/08/2022",
+    id: "1",
+    value: "This is first value todo ",
   },
 ];
 
-const user: User = {
-  name: "Mquan",
-  age: 20,
-  job: "FE dev",
-  familys: ["bo", "me", "em trai", "ong", "ba", ["asdas"]],
-  run: () => "nhanh",
-  junior: true,
-  premission: Premission.EDITOR,
-};
+const App = () => {
+  const { todos, handleAddTodo, handleRemoveTodo, inputRef } =
+    useTodo(initialState);
+  const [state, setState] = useState<{ id: number; value: string }[]>([]);
 
-const travelItem: TravelItem[] = [
-  {
-    image: "",
-    name: "",
-    totalReviews: 0,
-    rating: 0,
-    location: "",
-    price: 0,
-    date: "",
-    departure: "",
-    features: [
-      {
-        offer: false,
-        parking: true,
-        wifi: true,
-      },
-    ],
-  },
-];
+  useEffect(() => {
+    fetch("/data.json")
+      .then((res) => res.json())
+      .then((data) => setState(data));
+  }, []);
 
-function App() {
-  const [count, setCount] = useState(0);
-
-  const handleDisplayReview = (
-    total: number,
-    name: string,
-    premium: boolean
-  ) => {
-    return (
-      <>
-        Review total <strong>{total}</strong> | Last reviewed by{" "}
-        <strong>{name}</strong> {premium ? "⭐️" : ""}
-      </>
-    );
+  const handleClickAlert = (value: string) => {
+    alert(value);
   };
+
   return (
-    <div>
-      <div className="review">
-        <div className="review-image">
-          <img src="https://source.unsplash.com/random" alt="" />
+    <div className="w-[400px] shadow-lg p-5">
+      <Heading title="Accont information"></Heading>
+
+      {state.map((item) => (
+        <List handleClick={handleClickAlert} key={item.id} item={item.value}>
+          hello
+        </List>
+      ))}
+
+      <div className="w-f flex flex-col">
+        <div className="flex justify-between">
+          <input
+            ref={inputRef}
+            className="outline-none border border-blue-500 p-4 rounded-md "
+            type="text"
+          />
+          <button
+            onClick={handleAddTodo}
+            className="text-white bg-blue-500 p-4 rounded-md"
+          >
+            add todo
+          </button>
         </div>
-        <div className="review-info">
-          {handleDisplayReview(
-            reviews.length,
-            reviews[0].name,
-            reviews[0].premiumUser
-          )}
-        </div>
+
+        <ul className="mt-5">
+          {todos.map((todo) => (
+            <li
+              key={todo.id}
+              className="flex justify-between mb-3 items-center text-lg font-medium"
+            >
+              <p>
+                id:{todo.id} + {todo.value}
+              </p>{" "}
+              <button
+                onClick={() => handleRemoveTodo(todo.id)}
+                className="p-2 bg-red-500 rounded text-white"
+              >
+                remove
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
+};
+
+interface ItemList {
+  item: string;
+  handleClick: (item: string) => void;
+  children?: ReactNode;
 }
+
+const List = ({ item, handleClick, children }: ItemList) => {
+  return (
+    <li onClick={() => handleClick?.(item)}>
+      <p>{item}</p>
+      {children}
+    </li>
+  );
+};
+
+const Heading = ({ title }: { title: string }) => {
+  return <h2 className="text-blue-500 font-bold text-2xl mb-5">{title}</h2>;
+};
 
 export default App;

@@ -27,3 +27,8 @@ export interface TravelItem {
   departure: string;
   features: Features[];
 }
+
+export interface InitialState {
+  id: string;
+  value: string;
+}
